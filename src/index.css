@@ -8,33 +8,53 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Wellness-focused color palette inspired by ThriveGPT */
+    --background: 210 40% 98%;
+    --foreground: 215 25% 27%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 215 25% 27%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 215 25% 27%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Light blue as specified (#4BA3F2 ≈ 207 79% 61%) */
+    --primary: 207 79% 61%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 207 79% 71%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary: Soft wellness tones */
+    --secondary: 210 40% 94%;
+    --secondary-foreground: 215 25% 27%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted: Calming grays */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent: Warm wellness accent */
+    --accent: 168 76% 88%;
+    --accent-foreground: 215 25% 27%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 210 40% 90%;
+    --input: 210 40% 96%;
+    --ring: 207 79% 61%;
+
+    /* Wellness gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(207 79% 61%), hsl(207 79% 71%));
+    --gradient-wellness: linear-gradient(135deg, hsl(168 76% 88%), hsl(207 79% 71%));
+    --gradient-subtle: linear-gradient(180deg, hsl(210 40% 98%), hsl(210 40% 94%));
+
+    /* Wellness shadows */
+    --shadow-wellness: 0 4px 20px -4px hsl(207 79% 61% / 0.15);
+    --shadow-card: 0 2px 10px -2px hsl(215 25% 27% / 0.1);
+    --shadow-float: 0 8px 30px -8px hsl(207 79% 61% / 0.25);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
