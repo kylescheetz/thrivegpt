@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Habits from "./pages/Habits";
 import Journal from "./pages/Journal";
+import Coach from "./pages/Coach";
 import { BottomNavigation } from "./components/ui/navigation";
 import NotFound from "./pages/NotFound";
 
@@ -22,7 +23,7 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/habits" element={<Habits />} />
             <Route path="/journal" element={<Journal />} />
-            <Route path="/coach" element={<div className="p-4 pb-20">AI Coach page coming soon...</div>} />
+            <Route path="/coach" element={<Coach />} />
             <Route path="/profile" element={<div className="p-4 pb-20">Profile page coming soon...</div>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
