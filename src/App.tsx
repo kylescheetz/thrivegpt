@@ -8,6 +8,7 @@ import Habits from "./pages/Habits";
 import Journal from "./pages/Journal";
 import Coach from "./pages/Coach";
 import Profile from "./pages/Profile";
+import Onboarding from "./pages/Onboarding";
 import { BottomNavigation } from "./components/ui/navigation";
 import NotFound from "./pages/NotFound";
 
@@ -22,6 +23,7 @@ const App = () => (
         <div className="relative min-h-screen">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/habits" element={<Habits />} />
             <Route path="/journal" element={<Journal />} />
             <Route path="/coach" element={<Coach />} />
