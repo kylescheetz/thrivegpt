@@ -41,13 +41,16 @@ export default function Dashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
-          <Card className="shadow-card hover:shadow-wellness transition-all duration-300 cursor-pointer">
+          <Card 
+            className="shadow-card hover:shadow-wellness transition-all duration-300 cursor-pointer"
+            onClick={() => window.location.href = '/coach'}
+          >
             <CardContent className="p-4 text-center">
               <div className="w-12 h-12 bg-gradient-wellness rounded-full flex items-center justify-center mx-auto mb-2">
                 <Brain className="h-6 w-6 text-accent-foreground" />
               </div>
-              <h3 className="font-medium text-sm">AI Coach</h3>
-              <p className="text-xs text-muted-foreground">Quick chat</p>
+              <h3 className="font-medium text-sm">Biohacking Coach</h3>
+              <p className="text-xs text-muted-foreground">Science routines</p>
             </CardContent>
           </Card>
 

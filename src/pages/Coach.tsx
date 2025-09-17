@@ -1,130 +1,243 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Send, Mic, Minimize2, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Star, BookOpen, Zap, Target, RefreshCw, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-interface Message {
+interface BiohackingRoutine {
   id: string;
-  role: 'user' | 'coach';
-  content: string;
-  timestamp: Date;
+  title: string;
+  category: 'focus' | 'energy' | 'recovery';
+  summary: string;
+  science: string;
+  duration: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  equipment: string;
+  rating?: number;
+  tried?: boolean;
+  triedDate?: Date;
 }
 
-const initialMessages: Message[] = [
+const biohackingRoutines: BiohackingRoutine[] = [
   {
     id: '1',
-    role: 'coach',
-    content: "Hi! I'm your AI wellness coach. How can I help you thrive today?",
-    timestamp: new Date(Date.now() - 300000)
+    title: 'Cold Shower Protocol',
+    category: 'energy',
+    summary: '2-3 minutes of cold water exposure to boost alertness and metabolism.',
+    science: 'Cold exposure triggers norepinephrine release, increasing alertness by up to 530% and boosting brown fat for better metabolism.',
+    duration: '2-3 minutes',
+    difficulty: 'Medium',
+    equipment: 'None'
   },
   {
     id: '2',
-    role: 'user',
-    content: "I'm stressed.",
-    timestamp: new Date(Date.now() - 240000)
+    title: 'Magnesium Glycinate Evening',
+    category: 'recovery',
+    summary: '200-400mg before bed to improve sleep quality and muscle recovery.',
+    science: 'Magnesium activates GABA receptors and regulates melatonin, improving deep sleep phases by 23% in studies.',
+    duration: 'Daily',
+    difficulty: 'Easy',
+    equipment: 'Supplement'
   },
   {
     id: '3',
-    role: 'coach',
-    content: "Tell me more—what's on your mind?",
-    timestamp: new Date(Date.now() - 180000)
+    title: 'Blue Light Blocking',
+    category: 'recovery',
+    summary: 'Wear blue light glasses 2 hours before bed to optimize circadian rhythm.',
+    science: 'Blue light suppresses melatonin production. Blocking it increases melatonin by 58% and improves sleep onset.',
+    duration: '2 hours before bed',
+    difficulty: 'Easy',
+    equipment: 'Blue light glasses'
   },
   {
     id: '4',
-    role: 'user',
-    content: "Tough day at work.",
-    timestamp: new Date(Date.now() - 120000)
+    title: 'Box Breathing Focus',
+    category: 'focus',
+    summary: '4-4-4-4 breathing pattern for 5 minutes to enhance cognitive clarity.',
+    science: 'Controlled breathing activates the prefrontal cortex and reduces cortisol, improving focus by up to 40%.',
+    duration: '5 minutes',
+    difficulty: 'Easy',
+    equipment: 'None'
   },
   {
     id: '5',
-    role: 'coach',
-    content: "I hear you. Let's try a quick reset. Would you like me to guide you through a 3-minute breathing exercise?",
-    timestamp: new Date(Date.now() - 60000)
+    title: 'Intermittent Fasting 16:8',
+    category: 'energy',
+    summary: 'Fast for 16 hours, eat in 8-hour window to boost energy and mental clarity.',
+    science: 'Fasting triggers autophagy and ketone production, increasing BDNF and energy production in brain cells.',
+    duration: 'Daily',
+    difficulty: 'Medium',
+    equipment: 'None'
+  },
+  {
+    id: '6',
+    title: 'Red Light Therapy',
+    category: 'recovery',
+    summary: '10-15 minutes of 660nm red light for cellular repair and inflammation reduction.',
+    science: 'Red light stimulates mitochondrial cytochrome oxidase, increasing ATP production by 25% and accelerating healing.',
+    duration: '10-15 minutes',
+    difficulty: 'Easy',
+    equipment: 'Red light device'
   }
 ];
 
-const quickActions = [
-  'Calm Anxiety',
-  'Design Focus Sprint', 
-  'Morning Routine',
-  'Energy Boost',
-  'Sleep Better',
-  'Motivation'
+const goals = [
+  { id: 'focus', label: 'Focus', icon: Target, color: 'bg-blue-500' },
+  { id: 'energy', label: 'Energy', icon: Zap, color: 'bg-yellow-500' },
+  { id: 'recovery', label: 'Recovery', icon: RefreshCw, color: 'bg-green-500' }
 ];
 
 export default function Coach() {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const [routines, setRoutines] = useState<BiohackingRoutine[]>([]);
+  const [showGoalSelection, setShowGoalSelection] = useState(true);
 
   useEffect(() => {
-    // Auto-scroll to bottom when new messages are added
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    // Load saved data from localStorage
+    const savedRoutines = localStorage.getItem('biohacking-routines');
+    const savedGoals = localStorage.getItem('biohacking-goals');
+    
+    if (savedRoutines) {
+      setRoutines(JSON.parse(savedRoutines));
+    } else {
+      setRoutines(biohackingRoutines);
     }
-  }, [messages]);
-
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: inputValue.trim(),
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
-    setIsTyping(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const coachResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'coach',
-        content: getAIResponse(userMessage.content),
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, coachResponse]);
-      setIsTyping(false);
-    }, 1500);
-  };
-
-  const handleQuickAction = (action: string) => {
-    setInputValue(`Help me with: ${action}`);
-    textareaRef.current?.focus();
-  };
-
-  const getAIResponse = (userInput: string): string => {
-    const responses = [
-      "That sounds challenging. Let's work through this together. What would feel most helpful right now?",
-      "I understand. Sometimes taking a step back can give us clarity. What's one small thing that might help?",
-      "Thank you for sharing that with me. Let's focus on what you can control in this moment.",
-      "That makes sense. Would you like to try a quick technique to help you feel more centered?",
-      "I hear you. Remember, it's okay to have tough moments. What usually helps you feel better?"
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
+    
+    if (savedGoals) {
+      setSelectedGoals(JSON.parse(savedGoals));
+      setShowGoalSelection(false);
     }
+  }, []);
+
+  const handleGoalToggle = (goalId: string) => {
+    setSelectedGoals(prev => 
+      prev.includes(goalId)
+        ? prev.filter(id => id !== goalId)
+        : [...prev, goalId]
+    );
   };
+
+  const handleGoalSave = () => {
+    localStorage.setItem('biohacking-goals', JSON.stringify(selectedGoals));
+    setShowGoalSelection(false);
+  };
+
+  const handleTryRoutine = (routineId: string) => {
+    const updatedRoutines = routines.map(routine => 
+      routine.id === routineId 
+        ? { ...routine, tried: true, triedDate: new Date() }
+        : routine
+    );
+    setRoutines(updatedRoutines);
+    localStorage.setItem('biohacking-routines', JSON.stringify(updatedRoutines));
+  };
+
+  const handleRateRoutine = (routineId: string, rating: number) => {
+    const updatedRoutines = routines.map(routine => 
+      routine.id === routineId 
+        ? { ...routine, rating }
+        : routine
+    );
+    setRoutines(updatedRoutines);
+    localStorage.setItem('biohacking-routines', JSON.stringify(updatedRoutines));
+  };
+
+  const filteredRoutines = routines.filter(routine => 
+    selectedGoals.length === 0 || selectedGoals.includes(routine.category)
+  );
+
+  const canRate = (routine: BiohackingRoutine) => {
+    if (!routine.tried || !routine.triedDate) return false;
+    const daysSinceTrying = Math.floor((Date.now() - routine.triedDate.getTime()) / (1000 * 60 * 60 * 24));
+    return daysSinceTrying >= 1;
+  };
+
+  if (showGoalSelection) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <div className="sticky top-0 z-10 bg-background border-b border-border">
+          <div className="flex items-center justify-between p-4 max-w-md mx-auto">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/')}
+                className="p-2"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="text-xl font-semibold">Biohacking Coach</h1>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 max-w-md mx-auto space-y-6">
+          <Card className="shadow-wellness bg-gradient-primary text-white border-0">
+            <CardContent className="p-6 text-center">
+              <div className="text-4xl mb-3">🧬</div>
+              <h2 className="text-xl font-semibold mb-2">Welcome to Biohacking</h2>
+              <p className="text-white/80 text-sm">
+                Science-backed routines to optimize your biology
+              </p>
+            </CardContent>
+          </Card>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-4">What do you want to optimize?</h3>
+            <div className="space-y-3">
+              {goals.map((goal) => {
+                const Icon = goal.icon;
+                const isSelected = selectedGoals.includes(goal.id);
+                
+                return (
+                  <Card
+                    key={goal.id}
+                    className={cn(
+                      "cursor-pointer transition-all duration-200",
+                      isSelected
+                        ? "border-primary bg-primary/10 shadow-wellness"
+                        : "hover:border-primary/50 hover:bg-muted/50"
+                    )}
+                    onClick={() => handleGoalToggle(goal.id)}
+                  >
+                    <CardContent className="p-4 flex items-center gap-3">
+                      <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", goal.color)}>
+                        <Icon className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-medium">{goal.label}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Optimize your {goal.label.toLowerCase()}
+                        </p>
+                      </div>
+                      {isSelected && (
+                        <CheckCircle className="h-5 w-5 text-primary" />
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          <Button
+            onClick={handleGoalSave}
+            disabled={selectedGoals.length === 0}
+            className="w-full"
+          >
+            Get My Routines
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Header Bar */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border shadow-sm">
+    <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 z-10 bg-background border-b border-border">
         <div className="flex items-center justify-between p-4 max-w-md mx-auto">
           <div className="flex items-center gap-3">
             <Button
@@ -135,115 +248,124 @@ export default function Coach() {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-lg font-semibold flex items-center gap-2">
-              AI Coach 🤖
-            </h1>
+            <h1 className="text-xl font-semibold">Biohacking Coach</h1>
           </div>
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm" className="p-2">
-              <Minimize2 className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="p-2">
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowGoalSelection(true)}
+          >
+            Goals
+          </Button>
         </div>
       </div>
 
-      {/* Chat History */}
-      <ScrollArea className="flex-1 p-4 max-w-md mx-auto w-full" ref={scrollAreaRef}>
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={cn(
-                "flex",
-                message.role === 'user' ? "justify-end" : "justify-start"
-              )}
-            >
-              <Card className={cn(
-                "max-w-[80%] shadow-sm",
-                message.role === 'user' 
-                  ? "bg-primary text-primary-foreground" 
-                  : "bg-card"
-              )}>
-                <CardContent className="p-3">
-                  <p className="text-sm">{message.content}</p>
-                  <p className={cn(
-                    "text-xs mt-1 opacity-70",
-                    message.role === 'user' ? "text-primary-foreground/70" : "text-muted-foreground"
-                  )}>
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
-          
-          {isTyping && (
-            <div className="flex justify-start">
-              <Card className="bg-card shadow-sm">
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-1">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                    </div>
-                    <span className="text-xs text-muted-foreground ml-2">AI is typing...</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </div>
-      </ScrollArea>
-
-      {/* Quick Action Chips */}
-      <div className="p-4 max-w-md mx-auto w-full">
+      <div className="p-4 max-w-md mx-auto space-y-4">
         <div className="flex flex-wrap gap-2 mb-4">
-          {quickActions.map((action) => (
-            <Button
-              key={action}
-              variant="outline"
-              size="sm"
-              onClick={() => handleQuickAction(action)}
-              className="text-xs h-8 px-3"
-            >
-              {action}
-            </Button>
-          ))}
+          {selectedGoals.map(goalId => {
+            const goal = goals.find(g => g.id === goalId);
+            if (!goal) return null;
+            const Icon = goal.icon;
+            
+            return (
+              <Badge key={goalId} variant="secondary" className="flex items-center gap-1">
+                <Icon className="h-3 w-3" />
+                {goal.label}
+              </Badge>
+            );
+          })}
         </div>
 
-        {/* Input Row */}
-        <div className="flex items-end gap-2">
-          <div className="flex-1 relative">
-            <Textarea
-              ref={textareaRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type a message…"
-              className="min-h-[44px] max-h-[120px] resize-none pr-12"
-              rows={1}
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute right-1 bottom-1 h-8 w-8 p-0"
-            >
-              <Mic className="h-4 w-4" />
-            </Button>
-          </div>
-          <Button
-            onClick={handleSendMessage}
-            disabled={!inputValue.trim() || isTyping}
-            size="sm"
-            className="h-11 w-11 p-0"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
+        {filteredRoutines.map((routine) => (
+          <Card key={routine.id} className="shadow-wellness">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{routine.title}</CardTitle>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="outline" className="text-xs">
+                      {routine.difficulty}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {routine.duration}
+                    </Badge>
+                  </div>
+                </div>
+                {routine.tried && (
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                )}
+              </div>
+            </CardHeader>
+            
+            <CardContent className="space-y-4">
+              <p className="text-sm">{routine.summary}</p>
+              
+              <div className="bg-muted/50 rounded-lg p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <BookOpen className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">The Science</span>
+                </div>
+                <p className="text-xs text-muted-foreground">{routine.science}</p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  Equipment: {routine.equipment}
+                </span>
+              </div>
+
+              {!routine.tried ? (
+                <Button
+                  onClick={() => handleTryRoutine(routine.id)}
+                  className="w-full"
+                  variant="outline"
+                >
+                  Try This
+                </Button>
+              ) : (
+                <div className="space-y-2">
+                  {routine.rating ? (
+                    <div className="flex items-center justify-center gap-1">
+                      <span className="text-sm">Your rating:</span>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={cn(
+                            "h-4 w-4",
+                            star <= routine.rating!
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-muted-foreground"
+                          )}
+                        />
+                      ))}
+                    </div>
+                  ) : canRate(routine) ? (
+                    <div className="space-y-2">
+                      <p className="text-sm text-center">How did it work for you?</p>
+                      <div className="flex justify-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Button
+                            key={star}
+                            variant="ghost"
+                            size="sm"
+                            className="p-1"
+                            onClick={() => handleRateRoutine(routine.id, star)}
+                          >
+                            <Star className="h-5 w-5 text-yellow-400" />
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-center text-muted-foreground">
+                      Come back in a day to rate this routine
+                    </p>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );
