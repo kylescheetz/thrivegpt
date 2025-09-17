@@ -3,6 +3,8 @@ import { X, Mic, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
 interface DailyCheckInProps {
@@ -21,11 +23,12 @@ const moodEmojis = [
 export function DailyCheckIn({ isOpen, onClose }: DailyCheckInProps) {
   const [feeling, setFeeling] = useState('');
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
+  const [energyLevel, setEnergyLevel] = useState([5]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleSubmit = async () => {
-    if (!feeling.trim() && selectedMood === null) return;
+    if (!feeling.trim() && selectedMood === null && energyLevel[0] === 5) return;
     
     setIsAnalyzing(true);
     
@@ -39,6 +42,7 @@ export function DailyCheckIn({ isOpen, onClose }: DailyCheckInProps) {
   const handleClose = () => {
     setFeeling('');
     setSelectedMood(null);
+    setEnergyLevel([5]);
     setIsSubmitted(false);
     setIsAnalyzing(false);
     onClose();
@@ -97,9 +101,28 @@ export function DailyCheckIn({ isOpen, onClose }: DailyCheckInProps) {
                   </div>
                 </div>
 
-                <Button 
+                <div>
+                  <Label className="text-sm font-medium mb-3 block">Energy Level (1-10):</Label>
+                  <div className="px-2">
+                    <Slider
+                      value={energyLevel}
+                      onValueChange={setEnergyLevel}
+                      max={10}
+                      min={1}
+                      step={1}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                      <span>Low (1)</span>
+                      <span className="font-medium">Current: {energyLevel[0]}</span>
+                      <span>High (10)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Button
                   onClick={handleSubmit}
-                  disabled={!feeling.trim() && selectedMood === null}
+                  disabled={!feeling.trim() && selectedMood === null && energyLevel[0] === 5}
                   className="w-full bg-gradient-primary hover:shadow-wellness transition-all duration-300"
                 >
                   {isAnalyzing ? (
