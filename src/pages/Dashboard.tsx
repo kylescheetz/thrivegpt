@@ -51,7 +51,10 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-card hover:shadow-wellness transition-all duration-300 cursor-pointer">
+          <Card 
+            className="shadow-card hover:shadow-wellness transition-all duration-300 cursor-pointer"
+            onClick={() => window.location.href = '/journal'}
+          >
             <CardContent className="p-4 text-center">
               <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-2">
                 <BookOpen className="h-6 w-6 text-white" />
