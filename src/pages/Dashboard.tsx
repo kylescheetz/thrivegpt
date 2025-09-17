@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { DailyCheckIn } from '@/components/wellness/daily-check-in';
 import { HabitTracker } from '@/components/wellness/habit-tracker';
+import { NotificationTest } from '@/components/NotificationTest';
 
 // Mock data for visualization
 const weeklyHabitData = [
@@ -290,6 +291,14 @@ export default function Dashboard() {
           </h2>
           <HabitTracker />
         </div>
+
+        {/* Notification Test (Development) */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="space-y-2">
+            <div className="text-xs text-muted-foreground text-center">Development Tools</div>
+            <NotificationTest />
+          </div>
+        )}
 
         {/* Daily Check-In Button */}
         <Button

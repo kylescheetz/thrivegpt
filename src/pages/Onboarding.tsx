@@ -6,18 +6,13 @@ import { HabitsStep } from '@/components/onboarding/HabitsStep';
 import { NotificationsStep } from '@/components/onboarding/NotificationsStep';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { notificationService } from '@/services/notificationService';
+import { NotificationSettings } from '@/types/notifications';
 
 interface OnboardingData {
   goals: string[];
   habits: string[];
-  notifications: {
-    dailyReminders: boolean;
-    habitReminders: boolean;
-    weeklyReports: boolean;
-    motivationalMessages: boolean;
-    reminderTime: string;
-    frequency: string;
-  };
+  notifications: NotificationSettings;
 }
 
 const STEP_LABELS = ['Goals', 'Habits', 'Notifications'];
@@ -30,14 +25,7 @@ const Onboarding: React.FC = () => {
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     goals: [],
     habits: [],
-    notifications: {
-      dailyReminders: true,
-      habitReminders: true,
-      weeklyReports: false,
-      motivationalMessages: true,
-      reminderTime: 'morning',
-      frequency: 'daily'
-    }
+    notifications: notificationService.getSettings()
   });
 
   // Check if user has already completed onboarding
@@ -68,7 +56,7 @@ const Onboarding: React.FC = () => {
     }));
   };
 
-  const handleNotificationChange = (key: keyof OnboardingData['notifications'], value: boolean | string) => {
+  const handleNotificationChange = (key: keyof NotificationSettings, value: boolean | string) => {
     setOnboardingData(prev => ({
       ...prev,
       notifications: {
@@ -86,18 +74,32 @@ const Onboarding: React.FC = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const handleFinish = () => {
-    // Save onboarding data to localStorage
-    localStorage.setItem('onboarding_data', JSON.stringify(onboardingData));
-    localStorage.setItem('onboarding_completed', 'true');
-    
-    toast({
-      title: "Welcome to ThriveGPT! 🎉",
-      description: "Your wellness journey begins now. Let's build healthy habits together!",
-    });
+  const handleFinish = async () => {
+    try {
+      // Save onboarding data to localStorage
+      localStorage.setItem('onboarding_data', JSON.stringify(onboardingData));
+      localStorage.setItem('onboarding_completed', 'true');
+      
+      // Initialize notification service and save settings
+      await notificationService.initialize();
+      await notificationService.updateSettings(onboardingData.notifications);
+      
+      toast({
+        title: "Welcome to ThriveGPT! 🎉",
+        description: "Your wellness journey begins now. Let's build healthy habits together!",
+      });
 
-    // Navigate to dashboard
-    navigate('/');
+      // Navigate to dashboard
+      navigate('/');
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      toast({
+        title: "Setup completed",
+        description: "Welcome to ThriveGPT! Some features may require additional setup.",
+        variant: "default",
+      });
+      navigate('/');
+    }
   };
 
   const renderCurrentStep = () => {

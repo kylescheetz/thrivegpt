@@ -181,7 +181,11 @@ export default function Profile() {
               <Share2 className="h-4 w-4 mr-3" />
               Share Progress
             </Button>
-            <Button variant="outline" className="w-full justify-start">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start"
+              onClick={() => navigate('/notification-settings')}
+            >
               <Bell className="h-4 w-4 mr-3" />
               Notification Settings
             </Button>

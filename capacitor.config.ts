@@ -14,6 +14,11 @@ const config: CapacitorConfig = {
       backgroundColor: '#4BA3F2',
       androidSplashResourceName: 'splash',
       showSpinner: false
+    },
+    LocalNotifications: {
+      smallIcon: 'ic_stat_icon_config_sample',
+      iconColor: '#4BA3F2',
+      sound: 'beep.wav'
     }
   }
 };
