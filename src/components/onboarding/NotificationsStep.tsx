@@ -6,15 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Bell, Smartphone, Mail, MessageSquare } from 'lucide-react';
-
-interface NotificationSettings {
-  dailyReminders: boolean;
-  habitReminders: boolean;
-  weeklyReports: boolean;
-  motivationalMessages: boolean;
-  reminderTime: string;
-  frequency: string;
-}
+import { NotificationSettings } from '@/types/notifications';
 
 interface NotificationsStepProps {
   settings: NotificationSettings;
@@ -62,21 +54,41 @@ export const NotificationsStep: React.FC<NotificationsStepProps> = ({
 
           {settings.dailyReminders && (
             <div className="pl-4 border-l-2 border-primary/20 space-y-3">
-              <div className="flex items-center gap-4">
-                <Label className="text-sm">Reminder time:</Label>
-                <Select 
-                  value={settings.reminderTime} 
-                  onValueChange={(value) => onSettingChange('reminderTime', value)}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="morning">Morning (9 AM)</SelectItem>
-                    <SelectItem value="afternoon">Afternoon (2 PM)</SelectItem>
-                    <SelectItem value="evening">Evening (6 PM)</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="space-y-3">
+                <div className="flex items-center gap-4">
+                  <Label className="text-sm">Morning time:</Label>
+                  <Select 
+                    value={settings.morningTime} 
+                    onValueChange={(value) => onSettingChange('morningTime', value)}
+                  >
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="07:00">7:00 AM</SelectItem>
+                      <SelectItem value="08:00">8:00 AM</SelectItem>
+                      <SelectItem value="09:00">9:00 AM</SelectItem>
+                      <SelectItem value="10:00">10:00 AM</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Label className="text-sm">Evening time:</Label>
+                  <Select 
+                    value={settings.eveningTime} 
+                    onValueChange={(value) => onSettingChange('eveningTime', value)}
+                  >
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="18:00">6:00 PM</SelectItem>
+                      <SelectItem value="19:00">7:00 PM</SelectItem>
+                      <SelectItem value="20:00">8:00 PM</SelectItem>
+                      <SelectItem value="21:00">9:00 PM</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           )}
