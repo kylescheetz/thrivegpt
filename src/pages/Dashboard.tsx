@@ -8,6 +8,7 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Responsive
 import { DailyCheckIn } from '@/components/wellness/daily-check-in';
 import { HabitTracker } from '@/components/wellness/habit-tracker';
 import { NotificationTest } from '@/components/NotificationTest';
+import { GPTPromptTester } from '@/components/GPTPromptTester';
 
 // Mock data for visualization
 const weeklyHabitData = [
@@ -292,11 +293,22 @@ export default function Dashboard() {
           <HabitTracker />
         </div>
 
-        {/* Notification Test (Development) */}
+        {/* Development Tools */}
         {process.env.NODE_ENV === 'development' && (
-          <div className="space-y-2">
+          <div className="space-y-4">
             <div className="text-xs text-muted-foreground text-center">Development Tools</div>
-            <NotificationTest />
+            <Tabs defaultValue="notifications" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                <TabsTrigger value="gpt-prompts">GPT Prompts</TabsTrigger>
+              </TabsList>
+              <TabsContent value="notifications">
+                <NotificationTest />
+              </TabsContent>
+              <TabsContent value="gpt-prompts">
+                <GPTPromptTester />
+              </TabsContent>
+            </Tabs>
           </div>
         )}
 
