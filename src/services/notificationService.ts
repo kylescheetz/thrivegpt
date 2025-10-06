@@ -1,4 +1,4 @@
-import { LocalNotifications, ScheduleOptions } from '@capacitor/local-notifications';
+import { LocalNotifications, LocalNotificationSchema } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
 import {
   NotificationSettings,
@@ -85,7 +85,7 @@ export class NotificationService {
     // Clear existing notifications
     await this.cancelAllNotifications();
 
-    const notifications: ScheduleOptions[] = [];
+    const notifications: LocalNotificationSchema[] = [];
 
     // Schedule morning reminders
     if (settings.dailyReminders && settings.morningTime) {
@@ -121,7 +121,7 @@ export class NotificationService {
     }
   }
 
-  private createMorningNotification(settings: NotificationSettings): ScheduleOptions | null {
+  private createMorningNotification(settings: NotificationSettings): LocalNotificationSchema | null {
     if (!settings.morningTime) return null;
 
     const [hour, minute] = settings.morningTime.split(':').map(Number);
@@ -142,7 +142,7 @@ export class NotificationService {
     };
   }
 
-  private createEveningNotification(settings: NotificationSettings): ScheduleOptions | null {
+  private createEveningNotification(settings: NotificationSettings): LocalNotificationSchema | null {
     if (!settings.eveningTime) return null;
 
     const [hour, minute] = settings.eveningTime.split(':').map(Number);
@@ -163,7 +163,7 @@ export class NotificationService {
     };
   }
 
-  private createWeeklyNotification(settings: NotificationSettings): ScheduleOptions | null {
+  private createWeeklyNotification(settings: NotificationSettings): LocalNotificationSchema | null {
     if (settings.weeklyDay === undefined || !settings.weeklyTime) return null;
 
     const [hour, minute] = settings.weeklyTime.split(':').map(Number);
@@ -188,7 +188,7 @@ export class NotificationService {
     };
   }
 
-  private createMotivationalNotification(): ScheduleOptions | null {
+  private createMotivationalNotification(): LocalNotificationSchema | null {
     const message = NOTIFICATION_MESSAGES[NotificationType.MOTIVATIONAL];
     
     // Schedule motivational messages for mid-afternoon (2 PM) every 3 days

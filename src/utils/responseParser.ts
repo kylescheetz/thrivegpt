@@ -25,7 +25,7 @@ export interface ParseResult<T = any> {
   errors: ValidationError[];
   warnings: ValidationWarning[];
   originalText: string;
-  parsedFormat: 'json' | 'yaml' | 'text' | 'unknown';
+  parsedFormat: 'json' | 'yaml' | 'text';
 }
 
 export class ResponseParser {
@@ -42,7 +42,7 @@ export class ResponseParser {
       errors: [],
       warnings: [],
       originalText: content,
-      parsedFormat: 'unknown'
+      parsedFormat: 'text'
     };
 
     try {
@@ -115,7 +115,7 @@ export class ResponseParser {
       }
     }
 
-    return { data: null, format: 'unknown', errors };
+    return { data: null, format: 'text', errors };
   }
 
   /**
