@@ -18,10 +18,12 @@ import { PreferencesSettings } from '@/components/profile/PreferencesSettings';
 import { WeeklySummary } from '@/components/profile/WeeklySummary';
 import { UserProfile, DEFAULT_USER_PREFERENCES, DEFAULT_USER_STATS } from '@/types/profile';
 import { ProfileStorage } from '@/utils/profileStorage';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -32,14 +34,16 @@ export default function Profile() {
 
   useEffect(() => {
     loadProfile();
-  }, [refreshTrigger]);
+  }, [refreshTrigger, user]);
 
   const loadProfile = () => {
     let userProfile = ProfileStorage.getProfile();
     
     // Create default profile if none exists
     if (!userProfile) {
-      userProfile = ProfileStorage.createDefaultProfile('Alex Thompson', 'alex@example.com');
+      const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+      const email = user?.email || 'user@example.com';
+      userProfile = ProfileStorage.createDefaultProfile(displayName, email);
       
       // Initialize from onboarding data if available
       ProfileStorage.initializeFromOnboarding();
@@ -50,6 +54,23 @@ export default function Profile() {
       name: userProfile.name,
       email: userProfile.email
     });
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: 'Signed out',
+        description: 'You have been signed out successfully.',
+      });
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to sign out.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleEditProfile = () => {
@@ -300,11 +321,12 @@ export default function Profile() {
               <span className="text-sm">Share Progress</span>
             </Button>
             <Button 
-              variant="outline" 
+              variant="destructive" 
               className="h-auto p-4 flex flex-col gap-2"
+              onClick={handleSignOut}
             >
-              <HelpCircle className="h-6 w-6" />
-              <span className="text-sm">Help & Support</span>
+              <LogOut className="h-6 w-6" />
+              <span className="text-sm">Sign Out</span>
             </Button>
           </CardContent>
         </Card>
